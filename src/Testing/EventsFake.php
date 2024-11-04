@@ -28,6 +28,8 @@ class EventsFake extends EventsFacade implements Fake
 
     public Collection $quickCreateCalls;
 
+    public Collection $quickCreateFakes;
+
     public Collection $findFakes;
 
     public Collection $getFakes;
@@ -40,6 +42,7 @@ class EventsFake extends EventsFacade implements Fake
 
         $this->createCalls = collect();
         $this->quickCreateCalls = collect();
+        $this->quickCreateFakes = collect();
         $this->findFakes = collect();
         $this->getFakes = collect();
         $this->calendarsFake = collect();
@@ -60,9 +63,17 @@ class EventsFake extends EventsFacade implements Fake
 
     public function quickCreate(string $text)
     {
-        $event = new Event;
+        $event = null;
 
-        $event->calendarId = $this->events->getGoogleCalendarId();
+        if ($this->quickCreateFakes->has($text)) {
+            $event = Event::createFromProperties($this->quickCreateFakes->get($text));
+        } elseif ($this->quickCreateFakes->has('|DEFAULT|')) {
+            $event = Event::createFromProperties($this->quickCreateFakes->get('|DEFAULT|'));
+        } else {
+            $event = new Event;
+
+            $event->calendarId = $this->events->getGoogleCalendarId();
+        }
 
         $this->quickCreateCalls->put($text, $event);
 
@@ -113,6 +124,18 @@ class EventsFake extends EventsFacade implements Fake
         }
 
         return $this->fakeGoogleCalendar($calendarId);
+    }
+
+    /**
+     * @param iterable $event
+     * @param ?string $text
+     * @return $this
+     */
+    public function fakeQuickCreate(iterable $event, mixed $text = null)
+    {
+        $this->quickCreateFakes->put($text ?? '|DEFAULT|', $event);
+
+        return $this;
     }
 
     public function fakeFind(

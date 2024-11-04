@@ -223,6 +223,40 @@ class EventsFakeTest extends TestCase
     }
 
     /** @test */
+    public function fakeQuickCreate_will_mock_returned_event(): void
+    {
+        $this->eventsFake->fakeQuickCreate([
+            'summary' => 'Event 1',
+            'startDateTime' => today(),
+            'endDateTime' => today()->addHour(),
+        ], 'Event 1');
+
+        $event = Events::quickCreate('Event 1');
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertEquals('Event 1', $event->summary);
+        $this->assertEquals(today(), $event->startDateTime);
+        $this->assertEquals(today()->addHour(), $event->endDateTime);
+    }
+
+    /** @test */
+    public function fakeQuickCreate_can_mock_default(): void
+    {
+        $this->eventsFake->fakeQuickCreate([
+            'summary' => 'Event 1',
+            'startDateTime' => today(),
+            'endDateTime' => today()->addHour(),
+        ]);
+
+        $event = Events::quickCreate('Event 1');
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertEquals('Event 1', $event->summary);
+        $this->assertEquals(today(), $event->startDateTime);
+        $this->assertEquals(today()->addHour(), $event->endDateTime);
+    }
+
+    /** @test */
     public function assertQuickCreated_can_assert_against_quick_created_events(): void
     {
         Events::quickCreate('Event 1');
@@ -246,6 +280,20 @@ class EventsFakeTest extends TestCase
         Events::quickCreate('Event 1');
 
         $this->eventsFake->assertQuickCreated('Non-existent Event');
+    }
+
+    /** @test */
+    public function assertQuickCreated_can_still_assert_against_faked_event(): void
+    {
+        $this->eventsFake->fakeQuickCreate([
+            'summary' => 'Event 1',
+            'startDateTime' => today(),
+            'endDateTime' => today()->addHour(),
+        ]);
+
+        Events::quickCreate('Event 1');
+
+        $this->eventsFake->assertQuickCreated('Event 1');
     }
 
     /** @test */
