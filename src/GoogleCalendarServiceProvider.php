@@ -7,14 +7,14 @@ use Spatie\GoogleCalendar\Exceptions\InvalidConfiguration;
 
 class GoogleCalendarServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(): void
     {
         $this->publishes([
             __DIR__.'/../config/google-calendar.php' => config_path('google-calendar.php'),
         ], 'config');
     }
 
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/google-calendar.php', 'google-calendar');
 
@@ -71,7 +71,7 @@ class GoogleCalendarServiceProvider extends ServiceProvider
         $this->validateConfigSetting($token);
     }
 
-    protected function validateConfigSetting(string $setting)
+    protected function validateConfigSetting(mixed $setting)
     {
         if (! is_array($setting) && ! is_string($setting)) {
             throw InvalidConfiguration::credentialsTypeWrong($setting);

@@ -21,7 +21,7 @@ class Events
             $event = Event::createFromProperties($event, $calendarId);
         }
 
-        $googleCalendar = Events::getGoogleCalendar($event->getCalendarId());
+        $googleCalendar = $this->getGoogleCalendar($event->getCalendarId());
 
         $optParams = array_merge($optParams, $event->getAdditionalOptParams());
 
@@ -32,7 +32,7 @@ class Events
 
     public function quickCreate(string $text, ?string $calendarId = null): Event
     {
-        $googleCalendar = Events::getGoogleCalendar($calendarId);
+        $googleCalendar = $this->getGoogleCalendar($calendarId);
 
         $googleEvent = $googleCalendar->insertEventFromText($text);
 
@@ -41,7 +41,7 @@ class Events
 
     public function update(Event $event, array $optParams = []): Event
     {
-        $googleCalendar = Events::getGoogleCalendar($event->getCalendarId());
+        $googleCalendar = $this->getGoogleCalendar($event->getCalendarId());
 
         $optParams = array_merge($optParams, $event->getAdditionalOptParams());
 
@@ -50,7 +50,7 @@ class Events
         return Event::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
     }
 
-    public function find($eventId, string $calendarId = null): Event
+    public function find(string $eventId, string $calendarId = null): Event
     {
         $googleCalendar = $this->getGoogleCalendar($calendarId);
 

@@ -13,6 +13,7 @@ use Google_Service_Calendar_EventAttendee;
 use Google_Service_Calendar_EventDateTime;
 use Google_Service_Calendar_EventSource;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\GoogleCalendar\Facades\Events;
 
@@ -37,12 +38,10 @@ class Event
     }
 
     /**
-     * @param iterable $properties
      * @param string|null $calendarId
-     *
      * @return static
      */
-    public static function createFromProperties(iterable $properties, string $calendarId = null)
+    public static function createFromProperties(iterable $properties, string $calendarId = null): self
     {
         $event = new static;
 
@@ -56,12 +55,10 @@ class Event
     }
 
     /**
-     * @param \Google_Service_Calendar_Event $googleEvent
      * @param $calendarId
-     *
      * @return static
      */
-    public static function createFromGoogleCalendarEvent(Google_Service_Calendar_Event $googleEvent, $calendarId)
+    public static function createFromGoogleCalendarEvent(Google_Service_Calendar_Event $googleEvent, $calendarId): self
     {
         $event = new static;
 
@@ -118,13 +115,7 @@ class Event
         Arr::set($this->googleEvent, $name, $value);
     }
 
-    /**
-     * @param array $properties
-     * @param string|null $calendarId
-     *
-     * @return mixed
-     */
-    public static function create(array $properties, string $calendarId = null, $optParams = [])
+    public static function create(array $properties, ?string $calendarId = null, array $optParams = []): Event
     {
         return Events::create($properties, $calendarId, $optParams);
     }
@@ -139,8 +130,12 @@ class Event
         return Events::find($eventId, $calendarId);
     }
 
-    public static function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
-    {
+    public static function get(
+        CarbonInterface $startDateTime = null,
+        CarbonInterface $endDateTime = null,
+        array $queryParameters = [],
+        ?string $calendarId = null
+    ): Collection {
         return Events::get($startDateTime, $endDateTime, $queryParameters, $calendarId);
     }
 
@@ -187,7 +182,7 @@ class Event
         return $this->save($optParams);
     }
 
-    public function delete(array $optParams = [])
+    public function delete(array $optParams = []): void
     {
         if (! $this->exists()) {
             return;
@@ -196,7 +191,7 @@ class Event
         Events::delete($this->calendarId)->deleteEvent($this->id, $optParams);
     }
 
-    public function addAttendee(array $attendee)
+    public function addAttendee(array $attendee): void
     {
         $this->attendees[] = new Google_Service_Calendar_EventAttendee([
             'email' => $attendee['email'],
@@ -208,7 +203,7 @@ class Event
         $this->googleEvent->setAttendees($this->attendees);
     }
 
-    public function addMeetLink()
+    public function addMeetLink(): void
     {
         $conferenceData = new Google_Service_Calendar_ConferenceData([
             'createRequest' => new Google_Service_Calendar_CreateConferenceRequest([
@@ -275,7 +270,7 @@ class Event
         $this->googleEvent->setSource($source);
     }
 
-    public function setColorId(int $id)
+    public function setColorId(int $id): void
     {
         $this->googleEvent->setColorId($id);
     }

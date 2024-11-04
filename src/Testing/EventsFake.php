@@ -84,7 +84,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function find($eventId, string $calendarId = null): Event
     {
-        $fake = $this->findFakes->first(function ($event) use ($eventId, $calendarId) {
+        $fake = $this->findFakes->first(function (array $event) use ($eventId, $calendarId): bool {
             return (is_null($event['eventId']) || $event['eventId'] == $eventId)
                 && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId);
         });
@@ -98,7 +98,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
     {
-        $fake = $this->getFakes->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId) {
+        $fake = $this->getFakes->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId): bool {
             return (is_null($event['startDateTime']) || $event['startDateTime']->is($startDateTime))
                 && (is_null($event['endDateTime']) || $event['endDateTime']->is($endDateTime))
                 && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId)
@@ -190,7 +190,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function assertCreated(array $properties, string $calendarId = null, $optParams = []): void
     {
-        $call = $this->createCalls->first(function ($event) use ($properties, $calendarId, $optParams) {
+        $call = $this->createCalls->first(function (array $event) use ($properties, $calendarId, $optParams): bool {
             return $event['properties'] == $properties
                 && $event['calendarId'] == $calendarId
                 && $event['optParams'] == $optParams;
@@ -201,7 +201,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function assertNotCreated(array $properties, string $calendarId = null, $optParams = []): void
     {
-        $call = $this->createCalls->first(function ($event) use ($properties, $calendarId, $optParams) {
+        $call = $this->createCalls->first(function (array $event) use ($properties, $calendarId, $optParams): bool {
             return $event['properties'] == $properties
                 && $event['calendarId'] == $calendarId
                 && $event['optParams'] == $optParams;
