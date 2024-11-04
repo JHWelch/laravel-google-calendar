@@ -55,13 +55,17 @@ class EventsFake extends Events implements Fake
 
     public function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
     {
-        $events = $this->getEvents->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId) {
-            return is_null($event['startDateTime']) || $event['startDateTime'] == $startDateTime
-                && is_null($event['endDateTime']) || $event['endDateTime'] == $endDateTime
-                && is_null($event['calendarId']) || $event['calendarId'] == $calendarId
-                && empty($event['queryParameters']) || $event['queryParameters'] == $queryParameters;
-        })['events'];
+        $fake = $this->getEvents->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId) {
+            return (is_null($event['startDateTime']) || $event['startDateTime']->is($startDateTime))
+                && (is_null($event['endDateTime']) || $event['endDateTime']->is($endDateTime))
+                && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId)
+                && (empty($event['queryParameters']) || $event['queryParameters'] == $queryParameters);
+        });
 
-        return collect($this->mapEvents($events));
+        if (is_null($fake)) {
+            throw MissingFake::missingGetEvents();
+        }
+
+        return collect($this->mapEvents($fake['events']));
     }
 }

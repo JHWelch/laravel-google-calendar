@@ -48,4 +48,47 @@ class EventsFakeTest extends TestCase
         $this->assertEquals(now()->addDay()->toDateTimeString(), $event2->startDateTime);
         $this->assertEquals(now()->addDay()->addHour()->toDateTimeString(), $event2->endDateTime);
     }
+
+    /** @test */
+    public function it_can_fake_a_specific_get(): void
+    {
+        $this->eventsFake->fakeGet(
+            events: [
+                [
+                    'summary' => 'Event 1',
+                    'startDateTime' => now(),
+                    'endDateTime' => now()->addHour(),
+                ],
+                [
+                    'summary' => 'Event 2',
+                    'startDateTime' => now()->addDay(),
+                    'endDateTime' => now()->addDay()->addHour(),
+                ]
+            ],
+            startDateTime: now(),
+            endDateTime: now()->addHour(),
+            queryParameters: ['orderBy' => 'startTime'],
+            calendarId: 'johndoe@example.com'
+        );
+
+        $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
+
+        $this->assertCount(2, $events);
+    }
+
+    /** @test */
+    public function it_will_throw_an_error_if_none_matches(): void
+    {
+        $this->eventsFake->fakeGet(
+            events: [],
+            startDateTime: now(),
+            endDateTime: now()->addHour(),
+            queryParameters: ['orderBy' => 'startTime'],
+            calendarId: 'johndoe@example.com'
+        );
+
+        $this->expectExceptionMessage('No fake get event matches the given parameters.');
+
+        Events::get(now()->subHour(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
+    }
 }
