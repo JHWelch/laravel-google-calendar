@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DateTime;
 use Mockery as m;
 use Spatie\GoogleCalendar\Event;
+use Spatie\GoogleCalendar\Facades\Events;
 use Spatie\GoogleCalendar\Tests\TestCase;
 
 class EventTest extends TestCase
@@ -178,10 +179,12 @@ class EventTest extends TestCase
     /** @test */
     public function it_can_create_an_event_based_on_a_text_string_statically()
     {
-        $event = m::mock(Event::class);
-        $event->shouldReceive('quickCreate')->once()->with('Appointment at Somewhere on April 25 10am-10:25am');
+        $eventsFake = Events::fake();
 
-        $event::quickCreate('Appointment at Somewhere on April 25 10am-10:25am');
+        $event = Event::quickCreate('Appointment at Somewhere on April 25 10am-10:25am');
+
+        $eventsFake->assertQuickCreated('Appointment at Somewhere on April 25 10am-10:25am');
+        $this->assertInstanceOf(Event::class, $event);
     }
 
     /** @test */
