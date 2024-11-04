@@ -135,4 +135,34 @@ class EventsFakeTest extends TestCase
             ['sendUpdates' => 'all'],
         );
     }
+
+    /** @test */
+    public function it_will_fail_assertion_if_nothing_created(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        $this->eventsFake->assertCreated(
+            ['summary' => 'Non-existent Event'],
+            'johndoe@example.com',
+            ['sendUpdates' => 'all'],
+        );
+    }
+
+    /** @test */
+    public function it_will_fail_assertion_if_event_properties_do_not_match(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        Events::create(
+            ['summary' => 'Event 1'],
+            'johndoe@example.com',
+            ['sendUpdates' => 'all'],
+        );
+
+        $this->eventsFake->assertCreated(
+            ['summary' => 'Non-existent Event'],
+            'johndoe@example.com',
+            ['sendUpdates' => 'all'],
+        );
+    }
 }
