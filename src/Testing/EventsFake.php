@@ -10,6 +10,7 @@ use Spatie\GoogleCalendar\Events;
 use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
 use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
 
+use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertTrue;
@@ -23,14 +24,17 @@ class EventsFake extends EventsFacade implements Fake
 
     public Collection $createEvents;
 
+    public Collection $quickCreateEvents;
+
     public Collection $getEvents;
 
     public function __construct(Events $actualEvents)
     {
         $this->events = $actualEvents;
 
-        $this->getEvents = collect();
         $this->createEvents = collect();
+        $this->quickCreateEvents = collect();
+        $this->getEvents = collect();
     }
 
     public function create(array $properties, string $calendarId = null, $optParams = [])
@@ -48,6 +52,17 @@ class EventsFake extends EventsFacade implements Fake
             'calendarId' => $calendarId,
             'optParams' => $optParams,
         ];
+
+        return $event;
+    }
+
+    public function quickCreate(string $text)
+    {
+        $event = new Event;
+
+        $event->calendarId = $this->events->getGoogleCalendarId();
+
+        $this->quickCreateEvents->put($text, $event);
 
         return $event;
     }
@@ -110,7 +125,22 @@ class EventsFake extends EventsFacade implements Fake
 
     public function assertNothingCreated()
     {
-        assertTrue($this->createEvents->isEmpty(), 'A fake create event was called.');
+        assertTrue($this->createEvents->isEmpty(), 'An event was created.');
+    }
+
+    public function assertQuickCreated(string $text)
+    {
+        assertTrue($this->quickCreateEvents->has($text), 'No fake quick create event matches the given text.');
+    }
+
+    public function assertNotQuickCreated(string $text)
+    {
+        assertFalse($this->quickCreateEvents->has($text), 'A fake quick create event matches the given text.');
+    }
+
+    public function assertNothingQuickCreated()
+    {
+        assertTrue($this->quickCreateEvents->isEmpty(), 'An event was quick created.');
     }
 
     protected function mapEvents(array $events): Collection

@@ -15,6 +15,7 @@ class EventsFakeTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        config()->set('google-calendar.calendar_id', 'defaultCalendarId');
         $this->eventsFake = Events::fake();
     }
 
@@ -218,5 +219,65 @@ class EventsFakeTest extends TestCase
         );
 
         $this->eventsFake->assertNothingCreated();
+    }
+
+    /** @test */
+    public function assertQuickCreated_can_assert_against_quick_created_events(): void
+    {
+        Events::quickCreate('Event 1');
+
+        $this->eventsFake->assertQuickCreated('Event 1');
+    }
+
+    /** @test */
+    public function assertQuickCreated_will_fail_assertion_if_nothing_quick_created(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        $this->eventsFake->assertQuickCreated('Non-existent Event');
+    }
+
+    /** @test */
+    public function assertQuickCreated_will_fail_assertion_if_event_properties_do_not_match(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        Events::quickCreate('Event 1');
+
+        $this->eventsFake->assertQuickCreated('Non-existent Event');
+    }
+
+    /** @test */
+    public function assertNotQuickCreated_can_assert_something_not_quick_created(): void
+    {
+        Events::quickCreate('Event 1');
+
+        $this->eventsFake->assertNotQuickCreated('Non-existent Event');
+    }
+
+    /** @test */
+    public function assertNotQuickCreated_will_fail_assertion_if_event_is_quick_created(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        Events::quickCreate('Event 1');
+
+        $this->eventsFake->assertNotQuickCreated('Event 1');
+    }
+
+    /** @test */
+    public function assertNothingQuickCreated_can_assert_nothing_is_quick_created(): void
+    {
+        $this->eventsFake->assertNothingQuickCreated();
+    }
+
+    /** @test */
+    public function assertNothingQuickCreated_fails_if_anything_is_quick_created(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        Events::quickCreate('Event 1');
+
+        $this->eventsFake->assertNothingQuickCreated();
     }
 }
