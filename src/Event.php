@@ -21,7 +21,7 @@ class Event
     /** @var \Google_Service_Calendar_Event */
     public $googleEvent;
 
-    /** @var string */
+    /** @var ?string */
     protected $calendarId;
 
     /** @var array */
@@ -164,28 +164,18 @@ class Event
         return is_null($this->googleEvent['start']['dateTime']);
     }
 
-    public function save(string $method = null, $optParams = []): self
+    public function save($optParams = []): self
     {
-        $method = $method ?? ($this->exists() ? 'updateEvent' : 'insertEvent');
-
-        $googleCalendar = Events::getGoogleCalendar($this->calendarId);
-
-        if ($this->hasMeetLink) {
-            $optParams['conferenceDataVersion'] = 1;
+        if ($this->exists()) {
+            return Events::update($this, $optParams);
         }
 
-        $googleEvent = $googleCalendar->$method($this, $optParams);
-
-        return static::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
+        return Events::create($this, $this->calendarId, $optParams);
     }
 
     public function quickSave(string $text): self
     {
-        $googleCalendar = Events::getGoogleCalendar($this->calendarId);
-
-        $googleEvent = $googleCalendar->insertEventFromText($text);
-
-        return static::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
+        return Events::quickCreate($text, $this->calendarId);
     }
 
     public function update(array $attributes, $optParams = []): self
@@ -194,12 +184,16 @@ class Event
             $this->$name = $value;
         }
 
-        return $this->save('updateEvent', $optParams);
+        return $this->save($optParams);
     }
 
-    public function delete(string $eventId = null, $optParams = [])
+    public function delete(array $optParams = [])
     {
-        Events::getGoogleCalendar($this->calendarId)->deleteEvent($eventId ?? $this->id, $optParams);
+        if (! $this->exists()) {
+            return;
+        }
+
+        Events::delete($this->calendarId)->deleteEvent($this->id, $optParams);
     }
 
     public function addAttendee(array $attendee)
@@ -243,7 +237,7 @@ class Event
         return '';
     }
 
-    public function getCalendarId(): string
+    public function getCalendarId(): ?string
     {
         return $this->calendarId;
     }
@@ -284,6 +278,17 @@ class Event
     public function setColorId(int $id)
     {
         $this->googleEvent->setColorId($id);
+    }
+
+    public function getAdditionalOptParams(): array
+    {
+        $optParams = [];
+
+        if ($this->hasMeetLink) {
+            $optParams['conferenceDataVersion'] = 1;
+        }
+
+        return $optParams;
     }
 
     protected function getFieldName(string $name): string

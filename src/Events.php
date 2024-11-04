@@ -5,29 +5,49 @@ namespace Spatie\GoogleCalendar;
 use Carbon\CarbonInterface;
 use Google_Service_Calendar_Event;
 use Illuminate\Support\Collection;
+use Spatie\GoogleCalendar\Exceptions\InvalidConfiguration;
 
 class Events
 {
     /**
-     * @param array $properties
-     * @param string|null $calendarId
-     *
-     * @return mixed
+     * @param array|Event $event
      */
-    public function create(array $properties, string $calendarId = null, $optParams = [])
-    {
-        $event = Event::createFromProperties($properties, $calendarId);
+    public function create(
+        mixed $event,
+        ?string $calendarId = null,
+        array $optParams = [],
+    ): Event {
+        if (is_array($event)) {
+            $event = Event::createFromProperties($event, $calendarId);
+        }
 
-        return $event->save('insertEvent', $optParams);
+        $googleCalendar = Events::getGoogleCalendar($event->getCalendarId());
+
+        $optParams = array_merge($optParams, $event->getAdditionalOptParams());
+
+        $googleEvent = $googleCalendar->insertEvent($event, $optParams);
+
+        return Event::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
     }
 
-    public function quickCreate(string $text)
+    public function quickCreate(string $text, ?string $calendarId = null): Event
     {
-        $event = new Event;
+        $googleCalendar = Events::getGoogleCalendar($calendarId);
 
-        $event->calendarId = $this->getGoogleCalendarId();
+        $googleEvent = $googleCalendar->insertEventFromText($text);
 
-        return $event->quickSave($text);
+        return Event::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
+    }
+
+    public function update(Event $event, array $optParams = []): Event
+    {
+        $googleCalendar = Events::getGoogleCalendar($event->getCalendarId());
+
+        $optParams = array_merge($optParams, $event->getAdditionalOptParams());
+
+        $googleEvent = $googleCalendar->updateEvent($event, $optParams);
+
+        return Event::createFromGoogleCalendarEvent($googleEvent, $googleCalendar->getCalendarId());
     }
 
     public function find($eventId, string $calendarId = null): Event
@@ -39,8 +59,12 @@ class Events
         return Event::createFromGoogleCalendarEvent($googleEvent, $calendarId);
     }
 
-    public function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
-    {
+    public function get(
+        CarbonInterface $startDateTime = null,
+        CarbonInterface $endDateTime = null,
+        array $queryParameters = [],
+        string $calendarId = null
+    ): Collection {
         $googleCalendar = $this->getGoogleCalendar($calendarId);
 
         $googleEvents = $googleCalendar->listEvents($startDateTime, $endDateTime, $queryParameters);
@@ -69,6 +93,14 @@ class Events
                 return $event->sortDate;
             })
             ->values();
+    }
+
+    public function delete(
+        string $eventId,
+        ?string $calendarId = null,
+        array $optParams = [],
+    ): void {
+        $this->getGoogleCalendar($calendarId)->deleteEvent($eventId, $optParams);
     }
 
     public function getGoogleCalendar(string $calendarId = null): GoogleCalendar
