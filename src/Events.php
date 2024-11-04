@@ -80,6 +80,12 @@ class Events
 
     public function getGoogleCalendarId(string $calendarId = null): string
     {
-        return $calendarId ?? config('google-calendar.calendar_id');
+        $id = $calendarId ?? config('google-calendar.calendar_id');
+
+        if (is_null($id)) {
+            throw new \Exception('No default calendar id set.');
+        }
+
+        return $id;
     }
 }
