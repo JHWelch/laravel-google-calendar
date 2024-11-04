@@ -118,6 +118,42 @@ class Event
         Arr::set($this->googleEvent, $name, $value);
     }
 
+    /**
+     * @param array $properties
+     * @param string|null $calendarId
+     *
+     * @return mixed
+     */
+    public static function create(array $properties, string $calendarId = null, $optParams = [])
+    {
+        return Events::create($properties, $calendarId, $optParams);
+    }
+
+    public static function quickCreate(string $text)
+    {
+        return Events::quickCreate($text);
+    }
+
+    public static function find($eventId, string $calendarId = null): Event
+    {
+        return Events::find($eventId, $calendarId);
+    }
+
+    public static function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
+    {
+        return Events::get($startDateTime, $endDateTime, $queryParameters, $calendarId);
+    }
+
+    public static function getGoogleCalendar(string $calendarId = null): GoogleCalendar
+    {
+        return Events::getGoogleCalendar($calendarId);
+    }
+
+    public static function getGoogleCalendarId(string $calendarId = null): string
+    {
+        return Events::getGoogleCalendarId($calendarId);
+    }
+
     public function exists(): bool
     {
         return $this->id != '';
