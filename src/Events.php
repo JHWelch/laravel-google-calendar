@@ -16,13 +16,7 @@ class Events
      */
     public function create(array $properties, string $calendarId = null, $optParams = [])
     {
-        $event = new Event;
-
-        $event->calendarId = $this->getGoogleCalendarId($calendarId);
-
-        foreach ($properties as $name => $value) {
-            $event->$name = $value;
-        }
+        $event = Event::createFromProperties($properties, $calendarId);
 
         return $event->save('insertEvent', $optParams);
     }

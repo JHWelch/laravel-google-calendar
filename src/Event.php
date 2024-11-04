@@ -37,6 +37,25 @@ class Event
     }
 
     /**
+     * @param iterable $properties
+     * @param string|null $calendarId
+     *
+     * @return static
+     */
+    public static function createFromProperties(iterable $properties, string $calendarId = null)
+    {
+        $event = new static;
+
+        $event->calendarId = Events::getGoogleCalendarId($calendarId);
+
+        foreach ($properties as $name => $value) {
+            $event->$name = $value;
+        }
+
+        return $event;
+    }
+
+    /**
      * @param \Google_Service_Calendar_Event $googleEvent
      * @param $calendarId
      *

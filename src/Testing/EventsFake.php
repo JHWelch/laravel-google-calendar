@@ -39,13 +39,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function create(array $properties, string $calendarId = null, $optParams = [])
     {
-        $event = new Event;
-
-        $event->calendarId = $this->events->getGoogleCalendarId($calendarId);
-
-        foreach ($properties as $name => $value) {
-            $event->$name = $value;
-        }
+        $event = Event::createFromProperties($properties, $calendarId);
 
         $this->createEvents[] = [
             'properties' => $properties,
@@ -81,6 +75,11 @@ class EventsFake extends EventsFacade implements Fake
         }
 
         return collect($this->mapEvents($fake['events']));
+    }
+
+    public function getGoogleCalendarId(string $calendarId = null): string
+    {
+        return $this->events->getGoogleCalendarId($calendarId);
     }
 
     public function fakeGet(
@@ -146,18 +145,7 @@ class EventsFake extends EventsFacade implements Fake
     protected function mapEvents(array $events): Collection
     {
         return collect($events)->map(function ($event) {
-            return $this->mapEvent($event);
+            return Event::createFromProperties($event);
         });
-    }
-
-    protected function mapEvent(iterable $event): Event
-    {
-        $googleEvent = new Event;
-
-        foreach ($event as $name => $value) {
-            $googleEvent->$name = $value;
-        }
-
-        return $googleEvent;
     }
 }
