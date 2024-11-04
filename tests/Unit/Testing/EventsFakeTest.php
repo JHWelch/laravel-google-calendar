@@ -199,4 +199,24 @@ class EventsFakeTest extends TestCase
             ['sendUpdates' => 'all'],
         );
     }
+
+    /** @test */
+    public function it_can_assert_nothing_is_created(): void
+    {
+        $this->eventsFake->assertNothingCreated();
+    }
+
+    /** @test */
+    public function it_fails_if_anything_is_created(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        Events::create(
+            ['summary' => 'Event 1'],
+            'calendarId',
+            ['sendUpdates' => 'all'],
+        );
+
+        $this->eventsFake->assertNothingCreated();
+    }
 }

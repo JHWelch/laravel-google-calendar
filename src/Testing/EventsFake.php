@@ -12,6 +12,7 @@ use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
 
 use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertNull;
+use function PHPUnit\Framework\assertTrue;
 
 class EventsFake extends EventsFacade implements Fake
 {
@@ -105,6 +106,11 @@ class EventsFake extends EventsFacade implements Fake
         });
 
         assertNull($call, 'A fake create event matches the given parameters.');
+    }
+
+    public function assertNothingCreated()
+    {
+        assertTrue($this->createEvents->isEmpty(), 'A fake create event was called.');
     }
 
     protected function mapEvents(array $events): Collection
