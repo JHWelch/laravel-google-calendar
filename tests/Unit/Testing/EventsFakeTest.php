@@ -33,7 +33,7 @@ class EventsFakeTest extends TestCase
                 'summary' => 'Event 2',
                 'startDateTime' => now()->addDay(),
                 'endDateTime' => now()->addDay()->addHour(),
-            ]
+            ],
         ]);
 
         $events = Events::get();
@@ -58,7 +58,7 @@ class EventsFakeTest extends TestCase
             events: [
                 [
                     'summary' => 'Event 1',
-                ]
+                ],
             ],
             startDateTime: now()->addDay(),
             endDateTime: now()->addDay()->addHour(),
@@ -72,7 +72,7 @@ class EventsFakeTest extends TestCase
                 ],
                 [
                     'summary' => 'Event 2',
-                ]
+                ],
             ],
             startDateTime: now(),
             endDateTime: now()->addHour(),
@@ -95,7 +95,7 @@ class EventsFakeTest extends TestCase
                 ],
                 [
                     'summary' => 'Event 2',
-                ]
+                ],
             ],
             startDateTime: now(),
             calendarId: 'calendarId'

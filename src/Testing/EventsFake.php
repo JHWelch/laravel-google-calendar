@@ -6,17 +6,18 @@ use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Testing\Fakes\Fake;
 use Mockery\MockInterface;
-use Spatie\GoogleCalendar\Event;
-use Spatie\GoogleCalendar\Events;
-use Spatie\GoogleCalendar\Exceptions\InvalidConfiguration;
-use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
-use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
-use Spatie\GoogleCalendar\GoogleCalendar;
 
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertTrue;
+use Spatie\GoogleCalendar\Event;
+use Spatie\GoogleCalendar\Events;
+
+use Spatie\GoogleCalendar\Exceptions\InvalidConfiguration;
+use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
+use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
+use Spatie\GoogleCalendar\GoogleCalendar;
 
 class EventsFake extends EventsFacade implements Fake
 {
@@ -62,7 +63,7 @@ class EventsFake extends EventsFacade implements Fake
         return $event;
     }
 
-    public function quickCreate(string $text)
+    public function quickCreate(string $text): Event
     {
         $event = null;
 
@@ -120,7 +121,10 @@ class EventsFake extends EventsFacade implements Fake
         }
     }
 
-    public function getGoogleCalendar(string $calendarId = null)
+    /**
+     * @return MockInterface<GoogleCalendar>
+     */
+    public function getGoogleCalendar(string $calendarId = null): MockInterface
     {
         $calendarId = $this->getGoogleCalendarId($calendarId);
 
@@ -131,12 +135,7 @@ class EventsFake extends EventsFacade implements Fake
         return $this->fakeGoogleCalendar($calendarId);
     }
 
-    /**
-     * @param iterable $event
-     * @param ?string $text
-     * @return $this
-     */
-    public function fakeQuickCreate(iterable $event, mixed $text = null)
+    public function fakeQuickCreate(iterable $event, mixed $text = null): self
     {
         $this->quickCreateFakes->put($text ?? '|DEFAULT|', $event);
 
@@ -147,7 +146,7 @@ class EventsFake extends EventsFacade implements Fake
         iterable $event,
         string $eventId = null,
         string $calendarId = null,
-    ) {
+    ): self {
         $this->findFakes->push([
             'event' => $event,
             'eventId' => $eventId,
@@ -163,7 +162,7 @@ class EventsFake extends EventsFacade implements Fake
         CarbonInterface $endDateTime = null,
         array $queryParameters = [],
         string $calendarId = null
-    ){
+    ): self {
         $this->getFakes[] = [
             'events' => $events,
             'startDateTime' => $startDateTime,
@@ -175,7 +174,10 @@ class EventsFake extends EventsFacade implements Fake
         return $this;
     }
 
-    public function fakeGoogleCalendar(string $calendarId)
+    /**
+     * @return MockInterface<GoogleCalendar>
+     */
+    public function fakeGoogleCalendar(string $calendarId): MockInterface
     {
         $calendar = mock(GoogleCalendar::class);
         $calendar->shouldReceive('getCalendarId')->andReturn($calendarId);
@@ -186,7 +188,7 @@ class EventsFake extends EventsFacade implements Fake
         return $calendar;
     }
 
-    public function assertCreated(array $properties, string $calendarId = null, $optParams = [])
+    public function assertCreated(array $properties, string $calendarId = null, $optParams = []): void
     {
         $call = $this->createCalls->first(function ($event) use ($properties, $calendarId, $optParams) {
             return $event['properties'] == $properties
@@ -197,7 +199,7 @@ class EventsFake extends EventsFacade implements Fake
         assertNotNull($call, 'No fake create event matches the given parameters.');
     }
 
-    public function assertNotCreated(array $properties, string $calendarId = null, $optParams = [])
+    public function assertNotCreated(array $properties, string $calendarId = null, $optParams = []): void
     {
         $call = $this->createCalls->first(function ($event) use ($properties, $calendarId, $optParams) {
             return $event['properties'] == $properties
@@ -208,22 +210,22 @@ class EventsFake extends EventsFacade implements Fake
         assertNull($call, 'A fake create event matches the given parameters.');
     }
 
-    public function assertNothingCreated()
+    public function assertNothingCreated(): void
     {
         assertTrue($this->createCalls->isEmpty(), 'An event was created.');
     }
 
-    public function assertQuickCreated(string $text)
+    public function assertQuickCreated(string $text): void
     {
         assertTrue($this->quickCreateCalls->has($text), 'No fake quick create event matches the given text.');
     }
 
-    public function assertNotQuickCreated(string $text)
+    public function assertNotQuickCreated(string $text): void
     {
         assertFalse($this->quickCreateCalls->has($text), 'A fake quick create event matches the given text.');
     }
 
-    public function assertNothingQuickCreated()
+    public function assertNothingQuickCreated(): void
     {
         assertTrue($this->quickCreateCalls->isEmpty(), 'An event was quick created.');
     }
