@@ -28,7 +28,7 @@ class EventsTest extends TestCase
     /** @test */
     public function getGoogleCalendarId_throws_error_if_no_config_set(): void
     {
-        $this->expectExceptionMessage('No default calendar id set.');
+        $this->expectExceptionMessage('There was no calendar id specified. You must provide a valid calendar id to fetch events for.');
 
         Events::getGoogleCalendarId();
     }

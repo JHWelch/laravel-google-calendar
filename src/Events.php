@@ -83,7 +83,7 @@ class Events
         $id = $calendarId ?? config('google-calendar.calendar_id');
 
         if (is_null($id)) {
-            throw new \Exception('No default calendar id set.');
+            throw InvalidConfiguration::calendarIdNotSpecified();
         }
 
         return $id;

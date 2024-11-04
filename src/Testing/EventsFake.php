@@ -8,6 +8,7 @@ use Illuminate\Support\Testing\Fakes\Fake;
 use Mockery\MockInterface;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\Events;
+use Spatie\GoogleCalendar\Exceptions\InvalidConfiguration;
 use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
 use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
 use Spatie\GoogleCalendar\GoogleCalendar;
@@ -72,7 +73,7 @@ class EventsFake extends EventsFacade implements Fake
         } else {
             $event = new Event;
 
-            $event->calendarId = $this->events->getGoogleCalendarId();
+            $event->calendarId = $this->getGoogleCalendarId();
         }
 
         $this->quickCreateCalls->put($text, $event);
@@ -112,7 +113,11 @@ class EventsFake extends EventsFacade implements Fake
 
     public function getGoogleCalendarId(string $calendarId = null): string
     {
-        return $this->events->getGoogleCalendarId($calendarId) ?? 'calendarId';
+        try {
+            return $this->events->getGoogleCalendarId($calendarId);
+        } catch (InvalidConfiguration $e) {
+            return 'calendarId';
+        }
     }
 
     public function getGoogleCalendar(string $calendarId = null)
