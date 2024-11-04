@@ -119,4 +119,20 @@ class EventsFakeTest extends TestCase
 
         Events::get(now()->subHour(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
     }
+
+    /** @test */
+    public function it_can_assert_against_created_events(): void
+    {
+        Events::create(
+            ['summary' => 'Event 1'],
+            'johndoe@example.com',
+            ['sendUpdates' => 'all'],
+        );
+
+        $this->eventsFake->assertCreated(
+            ['summary' => 'Event 1'],
+            'johndoe@example.com',
+            ['sendUpdates' => 'all'],
+        );
+    }
 }

@@ -17,7 +17,11 @@ class Events extends Facade
 
     public static function fake(): EventsFake
     {
-        return tap(new EventsFake(static::getFacadeApplication()), function ($fake) {
+        $actualEvents = static::isFake()
+            ? static::getFacadeRoot()->events
+            : static::getFacadeRoot();
+
+        return tap(new EventsFake($actualEvents), function ($fake) {
             static::swap($fake);
         });
     }
