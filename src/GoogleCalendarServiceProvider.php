@@ -27,6 +27,7 @@ class GoogleCalendarServiceProvider extends ServiceProvider
         });
 
         $this->app->alias(GoogleCalendar::class, 'laravel-google-calendar');
+        $this->app->alias(Events::class, 'laravel-google-calendar-events');
     }
 
     protected function guardAgainstInvalidConfiguration(array $config = null)

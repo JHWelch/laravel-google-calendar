@@ -14,6 +14,7 @@ use Google_Service_Calendar_EventDateTime;
 use Google_Service_Calendar_EventSource;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Spatie\GoogleCalendar\Facades\Events;
 
 class Event
 {

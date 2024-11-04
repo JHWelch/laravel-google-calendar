@@ -14,11 +14,11 @@ class Events
      *
      * @return mixed
      */
-    public static function create(array $properties, string $calendarId = null, $optParams = [])
+    public function create(array $properties, string $calendarId = null, $optParams = [])
     {
         $event = new Event;
 
-        $event->calendarId = static::getGoogleCalendarId($calendarId);
+        $event->calendarId = $this->getGoogleCalendarId($calendarId);
 
         foreach ($properties as $name => $value) {
             $event->$name = $value;
@@ -27,27 +27,27 @@ class Events
         return $event->save('insertEvent', $optParams);
     }
 
-    public static function quickCreate(string $text)
+    public function quickCreate(string $text)
     {
         $event = new Event;
 
-        $event->calendarId = static::getGoogleCalendarId();
+        $event->calendarId = $this->getGoogleCalendarId();
 
         return $event->quickSave($text);
     }
 
-    public static function find($eventId, string $calendarId = null): Event
+    public function find($eventId, string $calendarId = null): Event
     {
-        $googleCalendar = static::getGoogleCalendar($calendarId);
+        $googleCalendar = $this->getGoogleCalendar($calendarId);
 
         $googleEvent = $googleCalendar->getEvent($eventId);
 
         return Event::createFromGoogleCalendarEvent($googleEvent, $calendarId);
     }
 
-    public static function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
+    public function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
     {
-        $googleCalendar = static::getGoogleCalendar($calendarId);
+        $googleCalendar = $this->getGoogleCalendar($calendarId);
 
         $googleEvents = $googleCalendar->listEvents($startDateTime, $endDateTime, $queryParameters);
 
@@ -77,14 +77,14 @@ class Events
             ->values();
     }
 
-    public static function getGoogleCalendar(string $calendarId = null): GoogleCalendar
+    public function getGoogleCalendar(string $calendarId = null): GoogleCalendar
     {
-        $calendarId = static::getGoogleCalendarId($calendarId);
+        $calendarId = $this->getGoogleCalendarId($calendarId);
 
         return GoogleCalendarFactory::createForCalendarId($calendarId);
     }
 
-    public static function getGoogleCalendarId(string $calendarId = null): string
+    public function getGoogleCalendarId(string $calendarId = null): string
     {
         return $calendarId ?? config('google-calendar.calendar_id');
     }
