@@ -3,6 +3,7 @@
 namespace Spatie\GoogleCalendar\Tests\Unit\Testing;
 
 use Illuminate\Support\Collection;
+use Mockery\MockInterface;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\Facades\Events;
 use Spatie\GoogleCalendar\Testing\EventsFake;
@@ -349,5 +350,40 @@ class EventsFakeTest extends TestCase
         $this->expectExceptionMessage('No fake find event matches the given parameters.');
 
         Events::find('nonExistentEventId');
+    }
+
+    /** @test */
+    public function getGoogleCalendar_returns_mocked_calendar_object(): void
+    {
+        $calendar = $this->eventsFake->getGoogleCalendar();
+
+        $this->assertInstanceOf(MockInterface::class, $calendar);
+        $this->assertEquals('defaultCalendarId', $calendar->getCalendarId());
+    }
+
+    /** @test */
+    public function getGoogleCalendar_returns_mocked_calendar_object_for_specific_calendar_id(): void
+    {
+        $calendar = $this->eventsFake->getGoogleCalendar('calendarId');
+
+        $this->assertInstanceOf(MockInterface::class, $calendar);
+        $this->assertEquals('calendarId', $calendar->getCalendarId());
+    }
+
+    /** @test */
+    public function getGoogleCalendar_returns_same_mocked_calendar_object_for_same_calendar_id(): void
+    {
+        $calendar1 = $this->eventsFake->getGoogleCalendar('calendarId');
+        $calendar2 = $this->eventsFake->getGoogleCalendar('calendarId');
+
+        $this->assertSame($calendar1, $calendar2);
+    }
+
+    /** @test */
+    public function fakeGoogleCalendar_pre_mocks_a_calendar_before_get_is_called(): void
+    {
+        $calendar = $this->eventsFake->fakeGoogleCalendar('calendarId');
+
+        $this->assertSame($calendar, $this->eventsFake->getGoogleCalendar('calendarId'));
     }
 }

@@ -5,10 +5,12 @@ namespace Spatie\GoogleCalendar\Testing;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Testing\Fakes\Fake;
+use Mockery\MockInterface;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\Events;
 use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
 use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
+use Spatie\GoogleCalendar\GoogleCalendar;
 
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNotNull;
@@ -30,6 +32,8 @@ class EventsFake extends EventsFacade implements Fake
 
     public Collection $getEvents;
 
+    public Collection $calendars;
+
     public function __construct(Events $actualEvents)
     {
         $this->events = $actualEvents;
@@ -38,6 +42,7 @@ class EventsFake extends EventsFacade implements Fake
         $this->quickCreateEvents = collect();
         $this->findEvents = collect();
         $this->getEvents = collect();
+        $this->calendars = collect();
     }
 
     public function create(array $properties, string $calendarId = null, $optParams = [])
@@ -64,6 +69,20 @@ class EventsFake extends EventsFacade implements Fake
         return $event;
     }
 
+    public function find($eventId, string $calendarId = null): Event
+    {
+        $fake = $this->findEvents->first(function ($event) use ($eventId, $calendarId) {
+            return (is_null($event['eventId']) || $event['eventId'] == $eventId)
+                && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId);
+        });
+
+        if (is_null($fake)) {
+            throw MissingFake::missingFindEvents();
+        }
+
+        return Event::createFromProperties($fake['event']);
+    }
+
     public function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
     {
         $fake = $this->getEvents->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId) {
@@ -85,18 +104,15 @@ class EventsFake extends EventsFacade implements Fake
         return $this->events->getGoogleCalendarId($calendarId);
     }
 
-    public function find($eventId, string $calendarId = null): Event
+    public function getGoogleCalendar(string $calendarId = null)
     {
-        $fake = $this->findEvents->first(function ($event) use ($eventId, $calendarId) {
-            return (is_null($event['eventId']) || $event['eventId'] == $eventId)
-                && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId);
-        });
+        $calendarId = $this->getGoogleCalendarId($calendarId);
 
-        if (is_null($fake)) {
-            throw MissingFake::missingFindEvents();
+        if ($this->calendars->has($calendarId)) {
+            return $this->calendars->get($calendarId);
         }
 
-        return Event::createFromProperties($fake['event']);
+        return $this->fakeGoogleCalendar($calendarId);
     }
 
     public function fakeFind(
@@ -129,6 +145,17 @@ class EventsFake extends EventsFacade implements Fake
         ];
 
         return $this;
+    }
+
+    public function fakeGoogleCalendar(string $calendarId)
+    {
+        $calendar = mock(GoogleCalendar::class);
+        $calendar->shouldReceive('getCalendarId')->andReturn($calendarId);
+        $calendar->shouldIgnoreMissing();
+
+        $this->calendars->put($calendarId, $calendar);
+
+        return $calendar;
     }
 
     public function assertCreated(array $properties, string $calendarId = null, $optParams = [])
