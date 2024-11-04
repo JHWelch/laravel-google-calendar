@@ -61,7 +61,7 @@ class EventsFakeTest extends TestCase
             startDateTime: now()->addDay(),
             endDateTime: now()->addDay()->addHour(),
             queryParameters: ['orderBy' => 'endTime'],
-            calendarId: 'johndoe@example.com'
+            calendarId: 'calendarId'
         );
         $this->eventsFake->fakeGet(
             events: [
@@ -75,10 +75,10 @@ class EventsFakeTest extends TestCase
             startDateTime: now(),
             endDateTime: now()->addHour(),
             queryParameters: ['orderBy' => 'startTime'],
-            calendarId: 'johndoe@example.com'
+            calendarId: 'calendarId'
         );
 
-        $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
+        $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
 
         $this->assertCount(2, $events);
     }
@@ -96,10 +96,10 @@ class EventsFakeTest extends TestCase
                 ]
             ],
             startDateTime: now(),
-            calendarId: 'johndoe@example.com'
+            calendarId: 'calendarId'
         );
 
-        $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
+        $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
 
         $this->assertCount(2, $events);
     }
@@ -112,12 +112,12 @@ class EventsFakeTest extends TestCase
             startDateTime: now(),
             endDateTime: now()->addHour(),
             queryParameters: ['orderBy' => 'startTime'],
-            calendarId: 'johndoe@example.com'
+            calendarId: 'calendarId'
         );
 
         $this->expectExceptionMessage('No fake get event matches the given parameters.');
 
-        Events::get(now()->subHour(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
+        Events::get(now()->subHour(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
     }
 
     /** @test */
@@ -125,13 +125,13 @@ class EventsFakeTest extends TestCase
     {
         Events::create(
             ['summary' => 'Event 1'],
-            'johndoe@example.com',
+            'calendarId',
             ['sendUpdates' => 'all'],
         );
 
         $this->eventsFake->assertCreated(
             ['summary' => 'Event 1'],
-            'johndoe@example.com',
+            'calendarId',
             ['sendUpdates' => 'all'],
         );
     }
@@ -143,7 +143,7 @@ class EventsFakeTest extends TestCase
 
         $this->eventsFake->assertCreated(
             ['summary' => 'Non-existent Event'],
-            'johndoe@example.com',
+            'calendarId',
             ['sendUpdates' => 'all'],
         );
     }
@@ -155,13 +155,47 @@ class EventsFakeTest extends TestCase
 
         Events::create(
             ['summary' => 'Event 1'],
-            'johndoe@example.com',
+            'calendarId',
             ['sendUpdates' => 'all'],
         );
 
         $this->eventsFake->assertCreated(
             ['summary' => 'Non-existent Event'],
-            'johndoe@example.com',
+            'calendarId',
+            ['sendUpdates' => 'all'],
+        );
+    }
+
+    /** @test */
+    public function it_can_assert_something_not_created(): void
+    {
+        Events::create(
+            ['summary' => 'Event 1'],
+            'calendarId',
+            ['sendUpdates' => 'all'],
+        );
+
+        $this->eventsFake->assertNotCreated(
+            ['summary' => 'Non-existent Event'],
+            'calendarId',
+            ['sendUpdates' => 'all'],
+        );
+    }
+
+    /** @test */
+    public function it_will_fail_assertion_if_event_is_created(): void
+    {
+        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+
+        Events::create(
+            ['summary' => 'Event 1'],
+            'calendarId',
+            ['sendUpdates' => 'all'],
+        );
+
+        $this->eventsFake->assertNotCreated(
+            ['summary' => 'Event 1'],
+            'calendarId',
             ['sendUpdates' => 'all'],
         );
     }

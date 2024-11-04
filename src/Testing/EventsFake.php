@@ -3,7 +3,6 @@
 namespace Spatie\GoogleCalendar\Testing;
 
 use Carbon\CarbonInterface;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Testing\Fakes\Fake;
 use Spatie\GoogleCalendar\Event;
@@ -12,6 +11,7 @@ use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
 use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
 
 use function PHPUnit\Framework\assertNotNull;
+use function PHPUnit\Framework\assertNull;
 
 class EventsFake extends EventsFacade implements Fake
 {
@@ -87,13 +87,24 @@ class EventsFake extends EventsFacade implements Fake
 
     public function assertCreated(array $properties, string $calendarId = null, $optParams = [])
     {
-        $fake = $this->createEvents->first(function ($event) use ($properties, $calendarId, $optParams) {
+        $call = $this->createEvents->first(function ($event) use ($properties, $calendarId, $optParams) {
             return $event['properties'] == $properties
                 && $event['calendarId'] == $calendarId
                 && $event['optParams'] == $optParams;
         });
 
-        assertNotNull($fake, 'No fake create event matches the given parameters.');
+        assertNotNull($call, 'No fake create event matches the given parameters.');
+    }
+
+    public function assertNotCreated(array $properties, string $calendarId = null, $optParams = [])
+    {
+        $call = $this->createEvents->first(function ($event) use ($properties, $calendarId, $optParams) {
+            return $event['properties'] == $properties
+                && $event['calendarId'] == $calendarId
+                && $event['optParams'] == $optParams;
+        });
+
+        assertNull($call, 'A fake create event matches the given parameters.');
     }
 
     protected function mapEvents(array $events): Collection
