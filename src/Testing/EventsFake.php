@@ -26,6 +26,8 @@ class EventsFake extends EventsFacade implements Fake
 
     public Collection $quickCreateEvents;
 
+    public Collection $findEvents;
+
     public Collection $getEvents;
 
     public function __construct(Events $actualEvents)
@@ -34,6 +36,7 @@ class EventsFake extends EventsFacade implements Fake
 
         $this->createEvents = collect();
         $this->quickCreateEvents = collect();
+        $this->findEvents = collect();
         $this->getEvents = collect();
     }
 
@@ -41,11 +44,11 @@ class EventsFake extends EventsFacade implements Fake
     {
         $event = Event::createFromProperties($properties, $calendarId);
 
-        $this->createEvents[] = [
+        $this->createEvents->push([
             'properties' => $properties,
             'calendarId' => $calendarId,
             'optParams' => $optParams,
-        ];
+        ]);
 
         return $event;
     }
@@ -80,6 +83,34 @@ class EventsFake extends EventsFacade implements Fake
     public function getGoogleCalendarId(string $calendarId = null): string
     {
         return $this->events->getGoogleCalendarId($calendarId);
+    }
+
+    public function find($eventId, string $calendarId = null): Event
+    {
+        $fake = $this->findEvents->first(function ($event) use ($eventId, $calendarId) {
+            return (is_null($event['eventId']) || $event['eventId'] == $eventId)
+                && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId);
+        });
+
+        if (is_null($fake)) {
+            throw MissingFake::missingFindEvents();
+        }
+
+        return Event::createFromProperties($fake['event']);
+    }
+
+    public function fakeFind(
+        iterable $event,
+        string $eventId = null,
+        string $calendarId = null,
+    ) {
+        $this->findEvents->push([
+            'event' => $event,
+            'eventId' => $eventId,
+            'calendarId' => $calendarId,
+        ]);
+
+        return $this;
     }
 
     public function fakeGet(

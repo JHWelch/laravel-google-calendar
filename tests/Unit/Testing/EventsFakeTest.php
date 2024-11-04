@@ -280,4 +280,74 @@ class EventsFakeTest extends TestCase
 
         $this->eventsFake->assertNothingQuickCreated();
     }
+
+    /** @test */
+    public function fakeFind_can_fake_return_of_event(): void
+    {
+        $this->eventsFake->fakeFind([
+            'summary' => 'Event 1',
+            'startDateTime' => now(),
+            'endDateTime' => now()->addHour(),
+        ]);
+
+        $event = Events::find('eventId');
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertEquals('Event 1', $event->summary);
+        $this->assertEquals(now()->toDateTimeString(), $event->startDateTime);
+        $this->assertEquals(now()->addHour()->toDateTimeString(), $event->endDateTime);
+    }
+
+    /** @test */
+    public function fakeFind_can_fake_a_specific_event(): void
+    {
+        $this->eventsFake->fakeFind(
+            event: [
+                'summary' => 'Non Matching',
+            ],
+            eventId: 'eventId1',
+            calendarId: 'calendarId1'
+        );
+        $this->eventsFake->fakeFind(
+            event: [
+                'summary' => 'Matching',
+            ],
+            eventId: 'eventId2',
+            calendarId: 'calendarId2'
+        );
+
+        $event = Events::find('eventId2', 'calendarId2');
+
+        $this->assertEquals('Matching', $event->summary);
+    }
+
+    /** @test */
+    public function fakeFind_can_only_match_on_fields_specified(): void
+    {
+        $this->eventsFake->fakeFind(
+            event: [
+                'summary' => 'Event 1',
+            ],
+            eventId: 'eventId',
+        );
+
+        $event = Events::find('eventId', 'calendarId');
+
+        $this->assertEquals('Event 1', $event->summary);
+    }
+
+    /** @test */
+    public function fakeFind_will_throw_an_error_if_none_matches(): void
+    {
+        $this->eventsFake->fakeFind(
+            event: [
+                'summary' => 'Event 1',
+            ],
+            eventId: 'eventId',
+        );
+
+        $this->expectExceptionMessage('No fake find event matches the given parameters.');
+
+        Events::find('nonExistentEventId');
+    }
 }
