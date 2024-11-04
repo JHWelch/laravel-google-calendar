@@ -56,18 +56,46 @@ class EventsFakeTest extends TestCase
             events: [
                 [
                     'summary' => 'Event 1',
-                    'startDateTime' => now(),
-                    'endDateTime' => now()->addHour(),
+                ]
+            ],
+            startDateTime: now()->addDay(),
+            endDateTime: now()->addDay()->addHour(),
+            queryParameters: ['orderBy' => 'endTime'],
+            calendarId: 'johndoe@example.com'
+        );
+        $this->eventsFake->fakeGet(
+            events: [
+                [
+                    'summary' => 'Event 1',
                 ],
                 [
                     'summary' => 'Event 2',
-                    'startDateTime' => now()->addDay(),
-                    'endDateTime' => now()->addDay()->addHour(),
                 ]
             ],
             startDateTime: now(),
             endDateTime: now()->addHour(),
             queryParameters: ['orderBy' => 'startTime'],
+            calendarId: 'johndoe@example.com'
+        );
+
+        $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'johndoe@example.com');
+
+        $this->assertCount(2, $events);
+    }
+
+    /** @test */
+    public function it_can_only_match_on_fields_specified(): void
+    {
+        $this->eventsFake->fakeGet(
+            events: [
+                [
+                    'summary' => 'Event 1',
+                ],
+                [
+                    'summary' => 'Event 2',
+                ]
+            ],
+            startDateTime: now(),
             calendarId: 'johndoe@example.com'
         );
 
