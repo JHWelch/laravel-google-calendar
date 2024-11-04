@@ -6,12 +6,12 @@ use Exception;
 
 class MissingFake extends Exception
 {
-    public static function missingGetEvents()
+    public static function missingGet()
     {
         return new static('No fake get event matches the given parameters.');
     }
 
-    public static function missingFindEvents()
+    public static function missingFind()
     {
         return new static('No fake find event matches the given parameters.');
     }

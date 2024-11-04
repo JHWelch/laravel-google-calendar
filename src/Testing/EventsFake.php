@@ -24,32 +24,32 @@ class EventsFake extends EventsFacade implements Fake
      */
     public Events $events;
 
-    public Collection $createEvents;
+    public Collection $createCalls;
 
-    public Collection $quickCreateEvents;
+    public Collection $quickCreateCalls;
 
-    public Collection $findEvents;
+    public Collection $findFakes;
 
-    public Collection $getEvents;
+    public Collection $getFakes;
 
-    public Collection $calendars;
+    public Collection $calendarsFake;
 
     public function __construct(Events $actualEvents)
     {
         $this->events = $actualEvents;
 
-        $this->createEvents = collect();
-        $this->quickCreateEvents = collect();
-        $this->findEvents = collect();
-        $this->getEvents = collect();
-        $this->calendars = collect();
+        $this->createCalls = collect();
+        $this->quickCreateCalls = collect();
+        $this->findFakes = collect();
+        $this->getFakes = collect();
+        $this->calendarsFake = collect();
     }
 
     public function create(array $properties, string $calendarId = null, $optParams = [])
     {
         $event = Event::createFromProperties($properties, $calendarId);
 
-        $this->createEvents->push([
+        $this->createCalls->push([
             'properties' => $properties,
             'calendarId' => $calendarId,
             'optParams' => $optParams,
@@ -64,20 +64,20 @@ class EventsFake extends EventsFacade implements Fake
 
         $event->calendarId = $this->events->getGoogleCalendarId();
 
-        $this->quickCreateEvents->put($text, $event);
+        $this->quickCreateCalls->put($text, $event);
 
         return $event;
     }
 
     public function find($eventId, string $calendarId = null): Event
     {
-        $fake = $this->findEvents->first(function ($event) use ($eventId, $calendarId) {
+        $fake = $this->findFakes->first(function ($event) use ($eventId, $calendarId) {
             return (is_null($event['eventId']) || $event['eventId'] == $eventId)
                 && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId);
         });
 
         if (is_null($fake)) {
-            throw MissingFake::missingFindEvents();
+            throw MissingFake::missingFind();
         }
 
         return Event::createFromProperties($fake['event']);
@@ -85,7 +85,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function get(CarbonInterface $startDateTime = null, CarbonInterface $endDateTime = null, array $queryParameters = [], string $calendarId = null): Collection
     {
-        $fake = $this->getEvents->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId) {
+        $fake = $this->getFakes->first(function ($event) use ($startDateTime, $endDateTime, $queryParameters, $calendarId) {
             return (is_null($event['startDateTime']) || $event['startDateTime']->is($startDateTime))
                 && (is_null($event['endDateTime']) || $event['endDateTime']->is($endDateTime))
                 && (is_null($event['calendarId']) || $event['calendarId'] == $calendarId)
@@ -93,7 +93,7 @@ class EventsFake extends EventsFacade implements Fake
         });
 
         if (is_null($fake)) {
-            throw MissingFake::missingGetEvents();
+            throw MissingFake::missingGet();
         }
 
         return collect($this->mapEvents($fake['events']));
@@ -101,15 +101,15 @@ class EventsFake extends EventsFacade implements Fake
 
     public function getGoogleCalendarId(string $calendarId = null): string
     {
-        return $this->events->getGoogleCalendarId($calendarId);
+        return $this->events->getGoogleCalendarId($calendarId) ?? 'calendarId';
     }
 
     public function getGoogleCalendar(string $calendarId = null)
     {
         $calendarId = $this->getGoogleCalendarId($calendarId);
 
-        if ($this->calendars->has($calendarId)) {
-            return $this->calendars->get($calendarId);
+        if ($this->calendarsFake->has($calendarId)) {
+            return $this->calendarsFake->get($calendarId);
         }
 
         return $this->fakeGoogleCalendar($calendarId);
@@ -120,7 +120,7 @@ class EventsFake extends EventsFacade implements Fake
         string $eventId = null,
         string $calendarId = null,
     ) {
-        $this->findEvents->push([
+        $this->findFakes->push([
             'event' => $event,
             'eventId' => $eventId,
             'calendarId' => $calendarId,
@@ -136,7 +136,7 @@ class EventsFake extends EventsFacade implements Fake
         array $queryParameters = [],
         string $calendarId = null
     ){
-        $this->getEvents[] = [
+        $this->getFakes[] = [
             'events' => $events,
             'startDateTime' => $startDateTime,
             'endDateTime' => $endDateTime,
@@ -153,14 +153,14 @@ class EventsFake extends EventsFacade implements Fake
         $calendar->shouldReceive('getCalendarId')->andReturn($calendarId);
         $calendar->shouldIgnoreMissing();
 
-        $this->calendars->put($calendarId, $calendar);
+        $this->calendarsFake->put($calendarId, $calendar);
 
         return $calendar;
     }
 
     public function assertCreated(array $properties, string $calendarId = null, $optParams = [])
     {
-        $call = $this->createEvents->first(function ($event) use ($properties, $calendarId, $optParams) {
+        $call = $this->createCalls->first(function ($event) use ($properties, $calendarId, $optParams) {
             return $event['properties'] == $properties
                 && $event['calendarId'] == $calendarId
                 && $event['optParams'] == $optParams;
@@ -171,7 +171,7 @@ class EventsFake extends EventsFacade implements Fake
 
     public function assertNotCreated(array $properties, string $calendarId = null, $optParams = [])
     {
-        $call = $this->createEvents->first(function ($event) use ($properties, $calendarId, $optParams) {
+        $call = $this->createCalls->first(function ($event) use ($properties, $calendarId, $optParams) {
             return $event['properties'] == $properties
                 && $event['calendarId'] == $calendarId
                 && $event['optParams'] == $optParams;
@@ -182,22 +182,22 @@ class EventsFake extends EventsFacade implements Fake
 
     public function assertNothingCreated()
     {
-        assertTrue($this->createEvents->isEmpty(), 'An event was created.');
+        assertTrue($this->createCalls->isEmpty(), 'An event was created.');
     }
 
     public function assertQuickCreated(string $text)
     {
-        assertTrue($this->quickCreateEvents->has($text), 'No fake quick create event matches the given text.');
+        assertTrue($this->quickCreateCalls->has($text), 'No fake quick create event matches the given text.');
     }
 
     public function assertNotQuickCreated(string $text)
     {
-        assertFalse($this->quickCreateEvents->has($text), 'A fake quick create event matches the given text.');
+        assertFalse($this->quickCreateCalls->has($text), 'A fake quick create event matches the given text.');
     }
 
     public function assertNothingQuickCreated()
     {
-        assertTrue($this->quickCreateEvents->isEmpty(), 'An event was quick created.');
+        assertTrue($this->quickCreateCalls->isEmpty(), 'An event was quick created.');
     }
 
     protected function mapEvents(array $events): Collection
