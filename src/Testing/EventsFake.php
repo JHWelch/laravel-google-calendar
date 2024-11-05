@@ -21,22 +21,31 @@ class EventsFake extends EventsFacade implements Fake
 {
     /**
      * The actual events instance.
+     *
+     * @var Events
      */
-    public Events $events;
+    public $events;
 
-    public Collection $createCalls;
+    /** @var Collection */
+    public $createCalls;
 
-    public Collection $quickCreateCalls;
+    /** @var Collection */
+    public $quickCreateCalls;
 
-    public Collection $quickCreateFakes;
+    /** @var Collection */
+    public $quickCreateFakes;
 
-    public Collection $updateCalls;
+    /** @var Collection */
+    public $updateCalls;
 
-    public Collection $findFakes;
+    /** @var Collection */
+    public $findFakes;
 
-    public Collection $getFakes;
+    /** @var Collection */
+    public $getFakes;
 
-    public Collection $calendarsFake;
+    /** @var Collection */
+    public $calendarsFake;
 
     public function __construct(Events $actualEvents)
     {
