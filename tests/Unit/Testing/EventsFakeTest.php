@@ -55,18 +55,18 @@ class EventsFakeTest extends TestCase
     public function fakeGet_can_fake_a_specific_get(): void
     {
         $this->eventsFake->fakeGet(
-            events: [
+            [
                 [
                     'summary' => 'Event 1',
                 ],
             ],
-            startDateTime: now()->addDay(),
-            endDateTime: now()->addDay()->addHour(),
-            queryParameters: ['orderBy' => 'endTime'],
-            calendarId: 'calendarId'
+            now()->addDay(),
+            now()->addDay()->addHour(),
+            ['orderBy' => 'endTime'],
+            'calendarId'
         );
         $this->eventsFake->fakeGet(
-            events: [
+            [
                 [
                     'summary' => 'Event 1',
                 ],
@@ -74,10 +74,10 @@ class EventsFakeTest extends TestCase
                     'summary' => 'Event 2',
                 ],
             ],
-            startDateTime: now(),
-            endDateTime: now()->addHour(),
-            queryParameters: ['orderBy' => 'startTime'],
-            calendarId: 'calendarId'
+            now(),
+            now()->addHour(),
+            ['orderBy' => 'startTime'],
+            'calendarId'
         );
 
         $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
@@ -89,7 +89,7 @@ class EventsFakeTest extends TestCase
     public function fakeGet_can_only_match_on_fields_specified(): void
     {
         $this->eventsFake->fakeGet(
-            events: [
+            [
                 [
                     'summary' => 'Event 1',
                 ],
@@ -97,8 +97,10 @@ class EventsFakeTest extends TestCase
                     'summary' => 'Event 2',
                 ],
             ],
-            startDateTime: now(),
-            calendarId: 'calendarId'
+            now(),
+            null,
+            [],
+            'calendarId',
         );
 
         $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
@@ -110,11 +112,11 @@ class EventsFakeTest extends TestCase
     public function fakeGet_will_throw_an_error_if_none_matches(): void
     {
         $this->eventsFake->fakeGet(
-            events: [],
-            startDateTime: now(),
-            endDateTime: now()->addHour(),
-            queryParameters: ['orderBy' => 'startTime'],
-            calendarId: 'calendarId'
+            [],
+            now(),
+            now()->addHour(),
+            ['orderBy' => 'startTime'],
+            'calendarId'
         );
 
         $this->expectExceptionMessage('No fake get event matches the given parameters.');
@@ -378,18 +380,18 @@ class EventsFakeTest extends TestCase
     public function fakeFind_can_fake_a_specific_event(): void
     {
         $this->eventsFake->fakeFind(
-            event: [
+            [
                 'summary' => 'Non Matching',
             ],
-            eventId: 'eventId1',
-            calendarId: 'calendarId1'
+            'eventId1',
+            'calendarId1'
         );
         $this->eventsFake->fakeFind(
-            event: [
+            [
                 'summary' => 'Matching',
             ],
-            eventId: 'eventId2',
-            calendarId: 'calendarId2'
+            'eventId2',
+            'calendarId2'
         );
 
         $event = Events::find('eventId2', 'calendarId2');
@@ -401,10 +403,10 @@ class EventsFakeTest extends TestCase
     public function fakeFind_can_only_match_on_fields_specified(): void
     {
         $this->eventsFake->fakeFind(
-            event: [
+            [
                 'summary' => 'Event 1',
             ],
-            eventId: 'eventId',
+            'eventId',
         );
 
         $event = Events::find('eventId', 'calendarId');
@@ -416,10 +418,10 @@ class EventsFakeTest extends TestCase
     public function fakeFind_will_throw_an_error_if_none_matches(): void
     {
         $this->eventsFake->fakeFind(
-            event: [
+            [
                 'summary' => 'Event 1',
             ],
-            eventId: 'eventId',
+            'eventId',
         );
 
         $this->expectExceptionMessage('No fake find event matches the given parameters.');
