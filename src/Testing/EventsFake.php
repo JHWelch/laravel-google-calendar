@@ -241,13 +241,20 @@ class EventsFake extends EventsFacade implements Fake
         assertTrue($this->quickCreateCalls->isEmpty(), 'An event was quick created.');
     }
 
-    public function assertUpdated(array $event, array $optParams = []): void
+    /**
+     * @param array|Event $event
+     */
+    public function assertUpdated(mixed $event, array $optParams = []): void
     {
         $call = $this->updateCalls->first(function (array $call) use ($event, $optParams): bool {
             $match = true;
 
-            foreach ($event as $key => $value) {
-                $match = $match && $call['event']->$key == $value;
+            if (is_array($event)) {
+                foreach ($event as $key => $value) {
+                    $match = $match && $call['event']->$key == $value;
+                }
+            } else {
+                $match = $call['event']->is($event);
             }
 
             return $match && $call['optParams'] == $optParams;

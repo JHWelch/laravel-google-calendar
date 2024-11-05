@@ -348,6 +348,16 @@ class EventsFakeTest extends TestCase
     }
 
     /** @test */
+    public function assertUpdated_can_assert_with_same_event(): void
+    {
+        $event = Event::createFromProperties(['id' => '123'], '456');
+
+        Events::update($event);
+
+        $this->eventsFake->assertUpdated($event);
+    }
+
+    /** @test */
     public function fakeFind_can_fake_return_of_event(): void
     {
         $this->eventsFake->fakeFind([
