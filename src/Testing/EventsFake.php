@@ -165,7 +165,7 @@ class EventsFake extends EventsFacade implements Fake
     public function fakeFind(
         iterable $event,
         string $eventId = null,
-        string $calendarId = null,
+        string $calendarId = null
     ): self {
         $this->findFakes->push([
             'event' => $event,
