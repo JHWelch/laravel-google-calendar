@@ -11,7 +11,8 @@ use Spatie\GoogleCalendar\Tests\TestCase;
 
 class EventsFakeTest extends TestCase
 {
-    public EventsFake $eventsFake;
+    /** @var EventsFake */
+    public $eventsFake;
 
     public function setUp(): void
     {
