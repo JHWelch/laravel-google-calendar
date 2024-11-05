@@ -30,6 +30,8 @@ class EventsFake extends EventsFacade implements Fake
 
     public Collection $quickCreateFakes;
 
+    public Collection $updateCalls;
+
     public Collection $findFakes;
 
     public Collection $getFakes;
@@ -43,6 +45,7 @@ class EventsFake extends EventsFacade implements Fake
         $this->createCalls = collect();
         $this->quickCreateCalls = collect();
         $this->quickCreateFakes = collect();
+        $this->updateCalls = collect();
         $this->findFakes = collect();
         $this->getFakes = collect();
         $this->calendarsFake = collect();
@@ -76,6 +79,16 @@ class EventsFake extends EventsFacade implements Fake
         }
 
         $this->quickCreateCalls->put($text, $event);
+
+        return $event;
+    }
+
+    public function update(Event $event, array $optParams = []): Event
+    {
+        $this->updateCalls->push([
+            'event' => $event,
+            'optParams' => $optParams,
+        ]);
 
         return $event;
     }
@@ -226,6 +239,21 @@ class EventsFake extends EventsFacade implements Fake
     public function assertNothingQuickCreated(): void
     {
         assertTrue($this->quickCreateCalls->isEmpty(), 'An event was quick created.');
+    }
+
+    public function assertUpdated(array $event, array $optParams = []): void
+    {
+        $call = $this->updateCalls->first(function (array $call) use ($event, $optParams): bool {
+            $match = true;
+
+            foreach ($event as $key => $value) {
+                $match = $match && $call['event']->$key == $value;
+            }
+
+            return $match && $call['optParams'] == $optParams;
+        });
+
+        assertNotNull($call, 'No fake update event matches the given parameters.');
     }
 
     protected function mapEvents(array $events): Collection

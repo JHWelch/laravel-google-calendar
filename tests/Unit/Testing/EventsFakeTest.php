@@ -331,6 +331,23 @@ class EventsFakeTest extends TestCase
     }
 
     /** @test */
+    public function assertUpdated_can_assert_event_with_property_array(): void
+    {
+        $event = new Event();
+        $event->summary = 'Event 1';
+        $event->startDateTime = today();
+        $event->endDateTime = today()->addHour();
+
+        Events::update($event);
+
+        $this->eventsFake->assertUpdated([
+            'summary' => 'Event 1',
+            'startDateTime' => today(),
+            'endDateTime' => today()->addHour(),
+        ]);
+    }
+
+    /** @test */
     public function fakeFind_can_fake_return_of_event(): void
     {
         $this->eventsFake->fakeFind([
