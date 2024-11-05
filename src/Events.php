@@ -98,7 +98,7 @@ class Events
     public function delete(
         string $eventId,
         ?string $calendarId = null,
-        array $optParams = [],
+        array $optParams = []
     ): void {
         $this->getGoogleCalendar($calendarId)->deleteEvent($eventId, $optParams);
     }
