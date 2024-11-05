@@ -170,10 +170,13 @@ class EventTest extends TestCase
     /** @test */
     public function it_can_create_an_event_based_on_a_text_string()
     {
-        $event = m::mock(Event::class);
-        $event->shouldReceive('quickSave')->once()->with('Appointment at Somewhere on April 25 10am-10:25am');
+        $eventsFake = Events::fake();
 
-        $event->quickSave('Appointment at Somewhere on April 25 10am-10:25am');
+        $event = $this->event->quickSave('Appointment at Somewhere on April 25 10am-10:25am');
+
+        $eventsFake->assertQuickCreated('Appointment at Somewhere on April 25 10am-10:25am');
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertNotSame($this->event, $event);
     }
 
     /** @test */
