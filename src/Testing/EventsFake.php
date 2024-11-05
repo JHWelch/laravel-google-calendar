@@ -6,14 +6,12 @@ use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Testing\Fakes\Fake;
 use Mockery\MockInterface;
-
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertNull;
 use function PHPUnit\Framework\assertTrue;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\Events;
-
 use Spatie\GoogleCalendar\Exceptions\InvalidConfiguration;
 use Spatie\GoogleCalendar\Exceptions\Testing\MissingFake;
 use Spatie\GoogleCalendar\Facades\Events as EventsFacade;
