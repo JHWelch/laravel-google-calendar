@@ -237,6 +237,12 @@ class Event
         return $this->calendarId;
     }
 
+    public function is(Event $event): bool
+    {
+        return $this->id === $event->id
+            && $this->getCalendarId() === $event->getCalendarId();
+    }
+
     protected function setDateProperty(string $name, CarbonInterface $date)
     {
         $eventDateTime = new Google_Service_Calendar_EventDateTime;
