@@ -60,10 +60,10 @@ class Events
     }
 
     public function get(
-        CarbonInterface $startDateTime = null,
-        CarbonInterface $endDateTime = null,
+        ?CarbonInterface $startDateTime = null,
+        ?CarbonInterface $endDateTime = null,
         array $queryParameters = [],
-        string $calendarId = null
+        ?string $calendarId = null
     ): Collection {
         $googleCalendar = $this->getGoogleCalendar($calendarId);
 
@@ -82,7 +82,7 @@ class Events
         $useUserOrder = isset($queryParameters['orderBy']);
 
         return collect($googleEventsList)
-            ->map(function (Google_Service_Calendar_Event $event) use ($calendarId) {
+            ->map(function (Google_Service_Calendar_Event $event) use ($calendarId): Event {
                 return Event::createFromGoogleCalendarEvent($event, $calendarId);
             })
             ->sortBy(function (Event $event, $index) use ($useUserOrder) {

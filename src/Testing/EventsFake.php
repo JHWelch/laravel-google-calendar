@@ -265,7 +265,7 @@ class EventsFake extends EventsFacade implements Fake
 
     protected function mapEvents(array $events): Collection
     {
-        return collect($events)->map(function ($event) {
+        return collect($events)->map(function ($event): Event {
             return Event::createFromProperties($event);
         });
     }

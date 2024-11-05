@@ -131,8 +131,8 @@ class Event
     }
 
     public static function get(
-        CarbonInterface $startDateTime = null,
-        CarbonInterface $endDateTime = null,
+        ?CarbonInterface $startDateTime = null,
+        ?CarbonInterface $endDateTime = null,
         array $queryParameters = [],
         ?string $calendarId = null
     ): Collection {

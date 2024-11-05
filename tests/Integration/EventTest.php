@@ -4,7 +4,6 @@ namespace Spatie\GoogleCalendar\Tests\Integration;
 
 use Carbon\Carbon;
 use DateTime;
-use Mockery as m;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\Facades\Events;
 use Spatie\GoogleCalendar\Tests\TestCase;
