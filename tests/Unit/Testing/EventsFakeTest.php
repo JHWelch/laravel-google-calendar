@@ -101,7 +101,7 @@ class EventsFakeTest extends TestCase
             now(),
             null,
             [],
-            'calendarId',
+            'calendarId'
         );
 
         $events = Events::get(now(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
@@ -131,13 +131,13 @@ class EventsFakeTest extends TestCase
         Events::create(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
 
         $this->eventsFake->assertCreated(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
     }
 
@@ -149,7 +149,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertCreated(
             ['summary' => 'Non-existent Event'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
     }
 
@@ -161,13 +161,13 @@ class EventsFakeTest extends TestCase
         Events::create(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
 
         $this->eventsFake->assertCreated(
             ['summary' => 'Non-existent Event'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
     }
 
@@ -177,13 +177,13 @@ class EventsFakeTest extends TestCase
         Events::create(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
 
         $this->eventsFake->assertNotCreated(
             ['summary' => 'Non-existent Event'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
     }
 
@@ -195,13 +195,13 @@ class EventsFakeTest extends TestCase
         Events::create(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
 
         $this->eventsFake->assertNotCreated(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
     }
 
@@ -219,7 +219,7 @@ class EventsFakeTest extends TestCase
         Events::create(
             ['summary' => 'Event 1'],
             'calendarId',
-            ['sendUpdates' => 'all'],
+            ['sendUpdates' => 'all']
         );
 
         $this->eventsFake->assertNothingCreated();

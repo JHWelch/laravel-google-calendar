@@ -15,7 +15,7 @@ class Events
     public function create(
         mixed $event,
         ?string $calendarId = null,
-        array $optParams = [],
+        array $optParams = []
     ): Event {
         if (is_array($event)) {
             $event = Event::createFromProperties($event, $calendarId);
