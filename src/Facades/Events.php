@@ -5,6 +5,7 @@ namespace Spatie\GoogleCalendar\Facades;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Testing\Fakes\Fake;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\GoogleCalendar;
 use Spatie\GoogleCalendar\Testing\EventsFake;
@@ -30,12 +31,20 @@ class Events extends Facade
 
     public static function fake(): EventsFake
     {
-        $actualEvents = static::isFake()
+        $actualEvents = static::isFakeFacade()
             ? static::getFacadeRoot()->events
             : static::getFacadeRoot();
 
         return tap(new EventsFake($actualEvents), function ($fake) {
             static::swap($fake);
         });
+    }
+
+    protected static function isFakeFacade(): bool
+    {
+        $name = static::getFacadeAccessor();
+
+        return isset(static::$resolvedInstance[$name]) &&
+               static::$resolvedInstance[$name] instanceof Fake;
     }
 }
