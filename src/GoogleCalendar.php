@@ -48,6 +48,7 @@ class GoogleCalendar
         if (is_null($endDateTime)) {
             $endDateTime = Carbon::now()->addYear()->endOfDay();
         }
+
         $parameters['timeMax'] = $endDateTime->format(DateTime::RFC3339);
 
         $parameters = array_merge($parameters, $queryParameters);
@@ -92,7 +93,7 @@ class GoogleCalendar
         return $this->calendarService->events->update($this->calendarId, $event->id, $event, $optParams);
     }
 
-    public function deleteEvent($eventId, $optParams = [])
+    public function deleteEvent($eventId, $optParams = []): void
     {
         if ($eventId instanceof Event) {
             $eventId = $eventId->id;

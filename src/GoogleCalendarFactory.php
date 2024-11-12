@@ -26,6 +26,7 @@ class GoogleCalendarFactory
         if ($authProfile === 'service_account') {
             return self::createServiceAccountClient($config['auth_profiles']['service_account']);
         }
+
         if ($authProfile === 'oauth') {
             return self::createOAuthClient($config['auth_profiles']['oauth']);
         }
