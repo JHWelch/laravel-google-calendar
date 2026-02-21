@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-google-calendar` will be documented in this file
 
+## 3.8.5 - 2026-02-21
+
+Support Laravel 13
+
 ## 3.8.4 - 2025-10-28
 
 ### What's Changed
