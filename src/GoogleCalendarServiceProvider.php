@@ -30,7 +30,7 @@ class GoogleCalendarServiceProvider extends ServiceProvider
         $this->app->alias(Events::class, 'laravel-google-calendar-events');
     }
 
-    protected function guardAgainstInvalidConfiguration(array $config = null)
+    protected function guardAgainstInvalidConfiguration(?array $config = null)
     {
         if (empty($config['calendar_id'])) {
             throw InvalidConfiguration::calendarIdNotSpecified();
@@ -53,14 +53,14 @@ class GoogleCalendarServiceProvider extends ServiceProvider
         throw InvalidConfiguration::invalidAuthenticationProfile($authProfile);
     }
 
-    protected function validateServiceAccountConfigSettings(array $config = null)
+    protected function validateServiceAccountConfigSettings(?array $config = null)
     {
         $credentials = $config['auth_profiles']['service_account']['credentials_json'];
 
         $this->validateConfigSetting($credentials);
     }
 
-    protected function validateOAuthConfigSettings(array $config = null)
+    protected function validateOAuthConfigSettings(?array $config = null)
     {
         $credentials = $config['auth_profiles']['oauth']['credentials_json'];
 
