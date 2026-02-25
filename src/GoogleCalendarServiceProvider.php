@@ -18,7 +18,7 @@ class GoogleCalendarServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/google-calendar.php', 'google-calendar');
 
-        $this->app->bind(GoogleCalendar::class, function () {
+        $this->app->bind(GoogleCalendar::class, function (): GoogleCalendar {
             $config = config('google-calendar');
 
             $this->guardAgainstInvalidConfiguration($config);
