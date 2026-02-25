@@ -1,10 +1,13 @@
 <?php
 
-namespace Spatie\GoogleCalendar;
+namespace Spatie\GoogleCalendar\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class GoogleCalendarFacade extends Facade
+/**
+ * @see \Spatie\GoogleCalendar\GoogleCalendar
+ */
+class GoogleCalendar extends Facade
 {
     protected static function getFacadeAccessor()
     {

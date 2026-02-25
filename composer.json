@@ -49,7 +49,7 @@
                 "Spatie\\GoogleCalendar\\GoogleCalendarServiceProvider"
             ],
             "aliases": {
-                "GoogleCalendar": "Spatie\\GoogleCalendar\\GoogleCalendarFacade"
+                "GoogleCalendar": "Spatie\\GoogleCalendar\\Facades\\GoogleCalendar"
             }
         }
     },

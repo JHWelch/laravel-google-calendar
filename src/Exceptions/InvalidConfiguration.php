@@ -6,22 +6,22 @@ use Exception;
 
 class InvalidConfiguration extends Exception
 {
-    public static function calendarIdNotSpecified()
+    public static function calendarIdNotSpecified(): self
     {
         return new static('There was no calendar id specified. You must provide a valid calendar id to fetch events for.');
     }
 
-    public static function credentialsJsonDoesNotExist(string $path)
+    public static function credentialsJsonDoesNotExist(string $path): self
     {
         return new static("Could not find a credentials file at `{$path}`.");
     }
 
-    public static function credentialsTypeWrong($credentials)
+    public static function credentialsTypeWrong($credentials): self
     {
         return new static(sprintf('Credentials should be an array or the path of json file. "%s was given.', gettype($credentials)));
     }
 
-    public static function invalidAuthenticationProfile($authProfile)
+    public static function invalidAuthenticationProfile($authProfile): self
     {
         return new static("Authentication profile [{$authProfile}] does not match any of the supported authentication types.");
     }

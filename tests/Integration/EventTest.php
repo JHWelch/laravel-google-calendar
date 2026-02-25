@@ -4,9 +4,9 @@ namespace Spatie\GoogleCalendar\Tests\Integration;
 
 use Carbon\Carbon;
 use DateTime;
-use Mockery as m;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\GoogleCalendar\Event;
+use Spatie\GoogleCalendar\Facades\Events;
 use Spatie\GoogleCalendar\Tests\TestCase;
 
 class EventTest extends TestCase
@@ -170,19 +170,24 @@ class EventTest extends TestCase
     #[Test]
     public function it_can_create_an_event_based_on_a_text_string()
     {
-        $event = m::mock(Event::class);
-        $event->shouldReceive('quickSave')->once()->with('Appointment at Somewhere on April 25 10am-10:25am');
+        $eventsFake = Events::fake();
 
-        $event->quickSave('Appointment at Somewhere on April 25 10am-10:25am');
+        $event = $this->event->quickSave('Appointment at Somewhere on April 25 10am-10:25am');
+
+        $eventsFake->assertQuickCreated('Appointment at Somewhere on April 25 10am-10:25am');
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertNotSame($this->event, $event);
     }
 
     #[Test]
     public function it_can_create_an_event_based_on_a_text_string_statically()
     {
-        $event = m::mock(Event::class);
-        $event->shouldReceive('quickCreate')->once()->with('Appointment at Somewhere on April 25 10am-10:25am');
+        $eventsFake = Events::fake();
 
-        $event::quickCreate('Appointment at Somewhere on April 25 10am-10:25am');
+        $event = Event::quickCreate('Appointment at Somewhere on April 25 10am-10:25am');
+
+        $eventsFake->assertQuickCreated('Appointment at Somewhere on April 25 10am-10:25am');
+        $this->assertInstanceOf(Event::class, $event);
     }
 
     #[Test]
@@ -194,4 +199,32 @@ class EventTest extends TestCase
 
         $this->assertEquals((string) $now->getTimezone(), 'Indian/Reunion');
     }
+
+    #[Test]
+    public function it_can_see_if_it_is_the_same_event(): void
+    {
+        $event1 = Event::createFromProperties(['id' => '123'], '456');
+        $event2 = Event::createFromProperties(['id' => '123'], '456');
+
+        $this->assertTrue($event1->is($event2));
+    }
+
+    #[Test]
+    public function it_will_not_match_on_just_id(): void
+    {
+        $event1 = Event::createFromProperties(['id' => '123'], '456');
+        $event2 = Event::createFromProperties(['id' => '123'], '789');
+
+        $this->assertFalse($event1->is($event2));
+    }
+
+    #[Test]
+    public function it_will_not_match_on_just_calendar_id(): void
+    {
+        $event1 = Event::createFromProperties(['id' => '123'], '456');
+        $event2 = Event::createFromProperties(['id' => '456'], '456');
+
+        $this->assertFalse($event1->is($event2));
+    }
+
 }
