@@ -200,7 +200,7 @@ class EventTest extends TestCase
         $this->assertEquals((string) $now->getTimezone(), 'Indian/Reunion');
     }
 
-    /** @test */
+    #[Test]
     public function it_can_see_if_it_is_the_same_event(): void
     {
         $event1 = Event::createFromProperties(['id' => '123'], '456');
@@ -209,7 +209,7 @@ class EventTest extends TestCase
         $this->assertTrue($event1->is($event2));
     }
 
-    /** @test */
+    #[Test]
     public function it_will_not_match_on_just_id(): void
     {
         $event1 = Event::createFromProperties(['id' => '123'], '456');
@@ -218,7 +218,7 @@ class EventTest extends TestCase
         $this->assertFalse($event1->is($event2));
     }
 
-    /** @test */
+    #[Test]
     public function it_will_not_match_on_just_calendar_id(): void
     {
         $event1 = Event::createFromProperties(['id' => '123'], '456');

@@ -2,12 +2,13 @@
 
 namespace Spatie\GoogleCalendar\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\GoogleCalendar\Facades\Events;
 use Spatie\GoogleCalendar\Tests\TestCase;
 
 class EventsTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function getGoogleCalendarId_returns_passed_id(): void
     {
         $id = Events::getGoogleCalendarId('test_id');
@@ -15,7 +16,7 @@ class EventsTest extends TestCase
         $this->assertEquals('test_id', $id);
     }
 
-    /** @test */
+    #[Test]
     public function getGoogleCalendarId_returns_config_default_if_null_passed(): void
     {
         config()->set('google-calendar.calendar_id', 'config_id');
@@ -25,7 +26,7 @@ class EventsTest extends TestCase
         $this->assertEquals('config_id', $id);
     }
 
-    /** @test */
+    #[Test]
     public function getGoogleCalendarId_throws_error_if_no_config_set(): void
     {
         $this->expectExceptionMessage('There was no calendar id specified. You must provide a valid calendar id to fetch events for.');

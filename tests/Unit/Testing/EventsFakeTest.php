@@ -4,6 +4,7 @@ namespace Spatie\GoogleCalendar\Tests\Unit\Testing;
 
 use Illuminate\Support\Collection;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\GoogleCalendar\Event;
 use Spatie\GoogleCalendar\Facades\Events;
 use Spatie\GoogleCalendar\Testing\EventsFake;
@@ -20,7 +21,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake = Events::fake();
     }
 
-    /** @test */
+    #[Test]
     public function fakeGet_can_fake_return_of_get(): void
     {
         $this->eventsFake->fakeGet([
@@ -51,7 +52,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals(now()->addDay()->addHour()->toDateTimeString(), $event2->endDateTime);
     }
 
-    /** @test */
+    #[Test]
     public function fakeGet_can_fake_a_specific_get(): void
     {
         $this->eventsFake->fakeGet(
@@ -85,7 +86,7 @@ class EventsFakeTest extends TestCase
         $this->assertCount(2, $events);
     }
 
-    /** @test */
+    #[Test]
     public function fakeGet_can_only_match_on_fields_specified(): void
     {
         $this->eventsFake->fakeGet(
@@ -106,7 +107,7 @@ class EventsFakeTest extends TestCase
         $this->assertCount(2, $events);
     }
 
-    /** @test */
+    #[Test]
     public function fakeGet_will_throw_an_error_if_none_matches(): void
     {
         $this->eventsFake->fakeGet(
@@ -122,7 +123,7 @@ class EventsFakeTest extends TestCase
         Events::get(now()->subHour(), now()->addHour(), ['orderBy' => 'startTime'], 'calendarId');
     }
 
-    /** @test */
+    #[Test]
     public function assertCreated_can_assert_against_created_events(): void
     {
         Events::create(
@@ -138,7 +139,7 @@ class EventsFakeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function assertCreated_will_fail_assertion_if_nothing_created(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -150,7 +151,7 @@ class EventsFakeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function assertCreated_will_fail_assertion_if_event_properties_do_not_match(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -168,7 +169,7 @@ class EventsFakeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function assertNotCreated_can_assert_something_not_created(): void
     {
         Events::create(
@@ -184,7 +185,7 @@ class EventsFakeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function assertNotCreated_will_fail_assertion_if_event_is_created(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -202,13 +203,13 @@ class EventsFakeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function assertNothingCreated_can_assert_nothing_is_created(): void
     {
         $this->eventsFake->assertNothingCreated();
     }
 
-    /** @test */
+    #[Test]
     public function assertNothingCreated_fails_if_anything_is_created(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -222,7 +223,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertNothingCreated();
     }
 
-    /** @test */
+    #[Test]
     public function fakeQuickCreate_will_mock_returned_event(): void
     {
         $this->eventsFake->fakeQuickCreate([
@@ -239,7 +240,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals(today()->addHour(), $event->endDateTime);
     }
 
-    /** @test */
+    #[Test]
     public function fakeQuickCreate_can_mock_default(): void
     {
         $this->eventsFake->fakeQuickCreate([
@@ -256,7 +257,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals(today()->addHour(), $event->endDateTime);
     }
 
-    /** @test */
+    #[Test]
     public function assertQuickCreated_can_assert_against_quick_created_events(): void
     {
         Events::quickCreate('Event 1');
@@ -264,7 +265,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertQuickCreated('Event 1');
     }
 
-    /** @test */
+    #[Test]
     public function assertQuickCreated_will_fail_assertion_if_nothing_quick_created(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -272,7 +273,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertQuickCreated('Non-existent Event');
     }
 
-    /** @test */
+    #[Test]
     public function assertQuickCreated_will_fail_assertion_if_event_properties_do_not_match(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -282,7 +283,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertQuickCreated('Non-existent Event');
     }
 
-    /** @test */
+    #[Test]
     public function assertQuickCreated_can_still_assert_against_faked_event(): void
     {
         $this->eventsFake->fakeQuickCreate([
@@ -296,7 +297,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertQuickCreated('Event 1');
     }
 
-    /** @test */
+    #[Test]
     public function assertNotQuickCreated_can_assert_something_not_quick_created(): void
     {
         Events::quickCreate('Event 1');
@@ -304,7 +305,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertNotQuickCreated('Non-existent Event');
     }
 
-    /** @test */
+    #[Test]
     public function assertNotQuickCreated_will_fail_assertion_if_event_is_quick_created(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -314,13 +315,13 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertNotQuickCreated('Event 1');
     }
 
-    /** @test */
+    #[Test]
     public function assertNothingQuickCreated_can_assert_nothing_is_quick_created(): void
     {
         $this->eventsFake->assertNothingQuickCreated();
     }
 
-    /** @test */
+    #[Test]
     public function assertNothingQuickCreated_fails_if_anything_is_quick_created(): void
     {
         $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
@@ -330,7 +331,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertNothingQuickCreated();
     }
 
-    /** @test */
+    #[Test]
     public function assertUpdated_can_assert_event_with_property_array(): void
     {
         $event = new Event();
@@ -347,7 +348,7 @@ class EventsFakeTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function assertUpdated_can_assert_with_same_event(): void
     {
         $event = Event::createFromProperties(['id' => '123'], '456');
@@ -357,7 +358,7 @@ class EventsFakeTest extends TestCase
         $this->eventsFake->assertUpdated($event);
     }
 
-    /** @test */
+    #[Test]
     public function fakeFind_can_fake_return_of_event(): void
     {
         $this->eventsFake->fakeFind([
@@ -374,7 +375,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals(now()->addHour()->toDateTimeString(), $event->endDateTime);
     }
 
-    /** @test */
+    #[Test]
     public function fakeFind_can_fake_a_specific_event(): void
     {
         $this->eventsFake->fakeFind(
@@ -397,7 +398,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals('Matching', $event->summary);
     }
 
-    /** @test */
+    #[Test]
     public function fakeFind_can_only_match_on_fields_specified(): void
     {
         $this->eventsFake->fakeFind(
@@ -412,7 +413,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals('Event 1', $event->summary);
     }
 
-    /** @test */
+    #[Test]
     public function fakeFind_will_throw_an_error_if_none_matches(): void
     {
         $this->eventsFake->fakeFind(
@@ -427,7 +428,7 @@ class EventsFakeTest extends TestCase
         Events::find('nonExistentEventId');
     }
 
-    /** @test */
+    #[Test]
     public function getGoogleCalendar_returns_mocked_calendar_object(): void
     {
         $calendar = $this->eventsFake->getGoogleCalendar();
@@ -436,7 +437,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals('defaultCalendarId', $calendar->getCalendarId());
     }
 
-    /** @test */
+    #[Test]
     public function getGoogleCalendar_returns_mocked_calendar_object_for_specific_calendar_id(): void
     {
         $calendar = $this->eventsFake->getGoogleCalendar('calendarId');
@@ -445,7 +446,7 @@ class EventsFakeTest extends TestCase
         $this->assertEquals('calendarId', $calendar->getCalendarId());
     }
 
-    /** @test */
+    #[Test]
     public function getGoogleCalendar_returns_same_mocked_calendar_object_for_same_calendar_id(): void
     {
         $calendar1 = $this->eventsFake->getGoogleCalendar('calendarId');
@@ -454,7 +455,7 @@ class EventsFakeTest extends TestCase
         $this->assertSame($calendar1, $calendar2);
     }
 
-    /** @test */
+    #[Test]
     public function fakeGoogleCalendar_pre_mocks_a_calendar_before_get_is_called(): void
     {
         $calendar = $this->eventsFake->fakeGoogleCalendar('calendarId');
